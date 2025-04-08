@@ -46,31 +46,6 @@
     { id: 20, name: 'Beef Steak (100g)', calories: 250, protein: 26, carbs: 0, fat: 15 },
   ];
 
-  async function fetchFoodData(query = '', page = 1, limit = 5) {
-    console.log(`Fetching page ${page} for query: "${query}"`);
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const lowerCaseQuery = query.toLowerCase();
-    const filteredData = query
-      ? mockFoodDatabase.filter(food => food.name.toLowerCase().includes(lowerCaseQuery))
-      : [...mockFoodDatabase]; // Return all if query is empty
-
-    const totalItems = filteredData.length;
-    const totalPages = Math.ceil(totalItems / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedData = filteredData.slice(startIndex, endIndex);
-
-    console.log(`Found ${totalItems} items, returning page ${page}/${totalPages}`);
-    return {
-      data: paginatedData,
-      currentPage: page,
-      totalPages: totalPages,
-      totalItems: totalItems,
-    };
-  }
-
   // Updated fetchFoodData to accept restaurantId (simulation)
   async function fetchFoodData(query = '', page = 1, limit = 5, restaurantId = null) {
     console.log(`Fetching page ${page} for query: "${query}", restaurant: ${restaurantId || 'any'}`);
