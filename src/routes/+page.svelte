@@ -24,26 +24,26 @@
   }
   // Replace this with your actual API call
   const mockFoodDatabase = [
-    { id: 1, name: 'Apple', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
-    { id: 2, name: 'Banana', calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
-    { id: 3, name: 'Chicken Breast (100g)', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
-    { id: 4, name: 'Broccoli (1 cup)', calories: 55, protein: 3.7, carbs: 11.2, fat: 0.6 },
-    { id: 5, name: 'Salmon (100g)', calories: 208, protein: 20, carbs: 0, fat: 13 },
-    { id: 6, name: 'Rice (1 cup cooked)', calories: 205, protein: 4.3, carbs: 45, fat: 0.4 },
-    { id: 7, name: 'Almonds (28g)', calories: 164, protein: 6, carbs: 6, fat: 14 },
-    { id: 8, name: 'Egg (large)', calories: 78, protein: 6, carbs: 0.6, fat: 5 },
-    { id: 9, name: 'Spinach (1 cup)', calories: 7, protein: 0.9, carbs: 1.1, fat: 0.1 },
-    { id: 10, name: 'Sweet Potato (medium)', calories: 86, protein: 1.6, carbs: 20, fat: 0.1 },
-    { id: 11, name: 'Avocado (half)', calories: 160, protein: 2, carbs: 9, fat: 15 },
-    { id: 12, name: 'Orange', calories: 62, protein: 1.2, carbs: 15, fat: 0.2 },
-    { id: 13, name: 'Greek Yogurt (100g)', calories: 59, protein: 10, carbs: 3.6, fat: 0.4 },
-    { id: 14, name: 'Quinoa (1 cup cooked)', calories: 222, protein: 8, carbs: 39, fat: 3.6 },
-    { id: 15, name: 'Tofu (100g)', calories: 76, protein: 8, carbs: 2.7, fat: 4.8 },
-    { id: 16, name: 'Peanut Butter (2 tbsp)', calories: 190, protein: 7, carbs: 8, fat: 16 },
-    { id: 17, name: 'Milk (1 cup)', calories: 103, protein: 8, carbs: 12, fat: 2.4 },
-    { id: 18, name: 'Oats (1/2 cup dry)', calories: 150, protein: 5, carbs: 27, fat: 3 },
-    { id: 19, name: 'Lentils (1 cup cooked)', calories: 230, protein: 18, carbs: 40, fat: 0.8 },
-    { id: 20, name: 'Beef Steak (100g)', calories: 250, protein: 26, carbs: 0, fat: 15 },
+    { id: 1, name: 'Apple', servingSize: '1 medium', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
+    { id: 2, name: 'Banana', servingSize: '1 medium', calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
+    { id: 3, name: 'Chicken Breast', servingSize: '100g', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
+    { id: 4, name: 'Broccoli', servingSize: '1 cup chopped', calories: 55, protein: 3.7, carbs: 11.2, fat: 0.6 },
+    { id: 5, name: 'Salmon', servingSize: '100g fillet', calories: 208, protein: 20, carbs: 0, fat: 13 },
+    { id: 6, name: 'Rice', servingSize: '1 cup cooked', calories: 205, protein: 4.3, carbs: 45, fat: 0.4 },
+    { id: 7, name: 'Almonds', servingSize: '28g (approx. 23)', calories: 164, protein: 6, carbs: 6, fat: 14 },
+    { id: 8, name: 'Egg', servingSize: '1 large', calories: 78, protein: 6, carbs: 0.6, fat: 5 },
+    { id: 9, name: 'Spinach', servingSize: '1 cup raw', calories: 7, protein: 0.9, carbs: 1.1, fat: 0.1 },
+    { id: 10, name: 'Sweet Potato', servingSize: '1 medium', calories: 86, protein: 1.6, carbs: 20, fat: 0.1 },
+    { id: 11, name: 'Avocado', servingSize: '1/2 medium', calories: 160, protein: 2, carbs: 9, fat: 15 },
+    { id: 12, name: 'Orange', servingSize: '1 medium', calories: 62, protein: 1.2, carbs: 15, fat: 0.2 },
+    { id: 13, name: 'Greek Yogurt', servingSize: '100g', calories: 59, protein: 10, carbs: 3.6, fat: 0.4 },
+    { id: 14, name: 'Quinoa', servingSize: '1 cup cooked', calories: 222, protein: 8, carbs: 39, fat: 3.6 },
+    { id: 15, name: 'Tofu', servingSize: '100g', calories: 76, protein: 8, carbs: 2.7, fat: 4.8 },
+    { id: 16, name: 'Peanut Butter', servingSize: '2 tbsp', calories: 190, protein: 7, carbs: 8, fat: 16 },
+    { id: 17, name: 'Milk', servingSize: '1 cup (240ml)', calories: 103, protein: 8, carbs: 12, fat: 2.4 },
+    { id: 18, name: 'Oats', servingSize: '1/2 cup dry (40g)', calories: 150, protein: 5, carbs: 27, fat: 3 },
+    { id: 19, name: 'Lentils', servingSize: '1 cup cooked', calories: 230, protein: 18, carbs: 40, fat: 0.8 },
+    { id: 20, name: 'Beef Steak', servingSize: '100g', calories: 250, protein: 26, carbs: 0, fat: 15 },
   ];
 
   // Updated fetchFoodData to accept restaurantId (simulation)
@@ -255,7 +255,12 @@
               animate:flip={{ duration: 300 }}
               class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200"
             >
-              <h3 class="text-lg font-semibold text-green-800">{food.name}</h3>
+              <div class="flex justify-between items-baseline mb-1">
+                 <h3 class="text-lg font-semibold text-green-800">{food.name}</h3>
+                 {#if food.servingSize}
+                   <span class="text-xs text-gray-500 italic">Serving: {food.servingSize}</span>
+                 {/if}
+              </div>
               <div class="text-sm text-gray-600 grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
                 <span><strong>Calories:</strong> {food.calories} kcal</span>
                 <span><strong>Protein:</strong> {food.protein}g</span>
