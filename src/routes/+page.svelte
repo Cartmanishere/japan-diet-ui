@@ -255,12 +255,12 @@
               animate:flip={{ duration: 300 }}
               class="bg-gray-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow duration-200"
             >
-              <div class="flex justify-between items-baseline mb-1">
-                 <h3 class="text-lg font-semibold text-green-800">{food.name}</h3>
-                 {#if food.servingSize}
-                   <span class="text-xs text-gray-500 italic">Serving: {food.servingSize}</span>
-                 {/if}
-              </div>
+              <h3 class="text-lg font-semibold text-green-800 mb-1">{food.name}</h3>
+              {#if food.servingSize}
+                <p class="text-sm text-gray-600 mb-2">
+                  <span class="font-medium">Serving Size:</span> {food.servingSize}
+                </p>
+              {/if}
               <div class="text-sm text-gray-600 grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
                 <span><strong>Calories:</strong> {food.calories} kcal</span>
                 <span><strong>Protein:</strong> {food.protein}g</span>
