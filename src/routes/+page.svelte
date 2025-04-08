@@ -1,9 +1,27 @@
 <script>
   import { fade } from 'svelte/transition';
   import { flip } from 'svelte/animate';
+  import { onMount } from 'svelte'; // Import onMount
   import "../app.css";
 
   // --- Mock API ---
+  // Mock Restaurant Data
+  const mockRestaurants = [
+    { id: 'r1', name: 'The Green Leaf Cafe' },
+    { id: 'r2', name: 'Ocean Blue Grill' },
+    { id: 'r3', name: 'Mountain Top Diner' },
+    { id: 'r4', name: 'City Bistro Express' },
+    { id: 'r5', name: 'All Restaurants' }, // Option for no specific restaurant
+  ];
+
+  async function fetchRestaurants() {
+    console.log('Fetching restaurants...');
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 200));
+    console.log('Restaurants fetched.');
+    // In a real app, handle potential errors here
+    return mockRestaurants;
+  }
   // Replace this with your actual API call
   const mockFoodDatabase = [
     { id: 1, name: 'Apple', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
@@ -203,18 +221,48 @@
       />
       <svg class="w-5 h-5 text-gray-400 absolute top-1/2 right-3 transform -translate-y-1/2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    </div>
+     </svg>
+   </div>
 
-    {#if isLoading}
-      <div class="text-center py-4 text-gray-500">
-        <svg class="animate-spin h-6 w-6 inline-block mr-2 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-        Loading...
-      </div>
-    {/if}
+   <!-- Restaurant Selector -->
+   <div class="mb-6">
+     <label for="restaurant-select" class="block text-sm font-medium text-gray-700 mb-1">Select Restaurant:</label>
+     {#if restaurantsLoading}
+       <div class="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500">Loading restaurants...</div>
+     {:else if restaurantsError}
+       <div class="w-full px-4 py-3 border border-red-300 rounded-lg bg-red-100 text-red-700">{restaurantsError}</div>
+     {:else}
+       <div class="relative">
+         <select
+           id="restaurant-select"
+           bind:value={selectedRestaurant}
+           on:change={handleRestaurantChange}
+           class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 appearance-none bg-white"
+           disabled={restaurantsLoading || !!restaurantsError}
+         >
+           <!-- <option value="" disabled>Select a restaurant</option> -->
+           {#each restaurants as restaurant (restaurant.id)}
+             <option value={restaurant.id}>{restaurant.name}</option>
+           {/each}
+         </select>
+         <svg class="w-5 h-5 text-gray-400 absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
+         </svg>
+       </div>
+     {/if}
+   </div>
+   <!-- End Restaurant Selector -->
+
+
+   {#if isLoading}
+     <div class="text-center py-4 text-gray-500">
+       <svg class="animate-spin h-6 w-6 inline-block mr-2 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+       </svg>
+       Loading food data...
+     </div>
+   {/if}
 
     {#if error}
       <div class="text-center py-4 text-red-600 bg-red-100 border border-red-300 rounded-lg">
