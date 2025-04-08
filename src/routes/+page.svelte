@@ -260,7 +260,6 @@
               animate:flip={{ duration: 300 }}
               class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-shadow duration-200 hover:shadow-md"
             >
-             <svelte:fragment>
               {@const isExpanded = expandedItemId === food.id}
 
               <!-- Clickable Header -->
@@ -301,7 +300,6 @@
                    </div>
                 </div>
               {/if}
-             </svelte:fragment>
             </li>
           {/each}
         </ul>
