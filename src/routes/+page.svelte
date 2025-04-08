@@ -52,34 +52,82 @@
       totalItems: totalItems,
     };
   }
+
+  // Updated fetchFoodData to accept restaurantId (simulation)
+  async function fetchFoodData(query = '', page = 1, limit = 5, restaurantId = null) {
+    console.log(`Fetching page ${page} for query: "${query}", restaurant: ${restaurantId || 'any'}`);
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+
+    const lowerCaseQuery = query.toLowerCase();
+    // --- Filtering Simulation ---
+    // In a real API, the backend would handle filtering by restaurantId
+    // Here, we'll just log it and use the same mock data for simplicity.
+    // If restaurantId is provided (and not 'all'), you might filter mockFoodDatabase
+    // based on some imaginary restaurant-specific menu.
+    let baseData = [...mockFoodDatabase];
+    if (restaurantId && restaurantId !== 'r5') { // 'r5' is 'All Restaurants'
+        // Example: Simulate fewer items or different items for a specific restaurant
+        // baseData = mockFoodDatabase.filter(food => food.id % 2 === (restaurantId === 'r1' ? 0 : 1)); // Just an example
+        console.log(`Simulating filter for restaurant ${restaurantId}`);
+    }
+
+    const filteredData = query
+      ? baseData.filter(food => food.name.toLowerCase().includes(lowerCaseQuery))
+      : baseData; // Return all (potentially restaurant-filtered) if query is empty
+
+    const totalItems = filteredData.length;
+    const totalPages = Math.ceil(totalItems / limit);
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedData = filteredData.slice(startIndex, endIndex);
+
+    console.log(`Found ${totalItems} items, returning page ${page}/${totalPages}`);
+    return {
+      data: paginatedData,
+      currentPage: page,
+      totalPages: totalPages,
+      totalItems: totalItems,
+    };
+  }
   // --- End Mock API ---
 
   let searchTerm = '';
+  let selectedRestaurant = 'r5'; // Default to 'All Restaurants'
+  let restaurants = [];
+  let restaurantsLoading = true;
+  let restaurantsError = null;
   let searchResults = [];
   let isLoading = false;
   let currentPage = 1;
   let totalPages = 1;
-  let error = null;
+  let error = null; // For food search errors
 
-  // Reactive statement to trigger search when searchTerm or currentPage changes
+  // Reactive statement to trigger search when searchTerm, currentPage, or selectedRestaurant changes
   $: {
     // Debounce search slightly
     const handler = setTimeout(() => {
-      searchFoods(currentPage);
-    }, 300); // Wait 300ms after typing stops
+      // Ensure restaurants have loaded before attempting search if a specific one is selected
+      if (!restaurantsLoading) {
+          searchFoods(currentPage);
+      }
+    }, 300); // Wait 300ms after interaction stops
 
     // Cleanup function for the timeout
-    () => clearTimeouat(handler);
+    () => clearTimeout(handler); // Corrected function name
   }
 
+
   async function searchFoods(page = 1) {
-    if (isLoading) return; // Prevent multiple simultaneous requests
+    // Don't search if restaurants are still loading and a specific one is needed (optional check)
+    if (isLoading || (restaurantsLoading && selectedRestaurant !== 'r5')) return;
     isLoading = true;
     error = null;
-    currentPage = page; // Update current page
+    currentPage = page; // Update current page for food search
 
     try {
-      const result = await fetchFoodData(searchTerm, currentPage, 5); // Fetch 5 items per page
+      // Pass selectedRestaurant to the fetch function
+      const result = await fetchFoodData(searchTerm, currentPage, 5, selectedRestaurant);
       searchResults = result.data;
       totalPages = result.totalPages;
       // Ensure currentPage doesn't exceed totalPages after filtering
@@ -104,8 +152,14 @@
 
   function handleSearchInput(event) {
     searchTerm = event.target.value;
-    currentPage = 1; // Reset to first page on new search
-    // The reactive block `$: searchFoods(currentPage)` will handle the search call
+    currentPage = 1; // Reset to first page on new text search
+    // The reactive block will handle the search call
+  }
+
+  function handleRestaurantChange(event) {
+    selectedRestaurant = event.target.value;
+    currentPage = 1; // Reset to first page when restaurant changes
+    // The reactive block will handle the search call
   }
 
  function goToPage(page) {
@@ -116,8 +170,19 @@
     }
   }
 
-  // Initial load (optional, could wait for first search)
-  // searchFoods(1); // Uncomment to load initial data
+  // Fetch restaurants when the component mounts
+  onMount(async () => {
+    try {
+      restaurants = await fetchRestaurants();
+      // Optionally trigger an initial search now that restaurants are loaded
+      // searchFoods(1); // Uncomment if you want initial data based on default restaurant
+    } catch (err) {
+      console.error("Error fetching restaurants:", err);
+      restaurantsError = "Could not load restaurants.";
+    } finally {
+      restaurantsLoading = false;
+    }
+  });
 
 </script>
 
@@ -177,10 +242,13 @@
           {/each}
         </ul>
       {:else if searchTerm && !isLoading}
-         <p class="text-center text-gray-500 py-4">No results found for "{searchTerm}".</p>
-      {:else if !searchTerm && !isLoading}
-         <p class="text-center text-gray-500 py-4">Start typing to search for foods.</p>
-      {/if}
+         <p class="text-center text-gray-500 py-4">No results found for "{searchTerm}"{selectedRestaurant !== 'r5' ? ` at ${restaurants.find(r=>r.id===selectedRestaurant)?.name || 'selected restaurant'}` : ''}.</p>
+       {:else if !searchTerm && !isLoading && !restaurantsLoading}
+         <p class="text-center text-gray-500 py-4">Start typing to search for foods{selectedRestaurant !== 'r5' ? ` at ${restaurants.find(r=>r.id===selectedRestaurant)?.name || 'selected restaurant'}` : ''}.</p>
+       {:else if restaurantsLoading}
+         <!-- Optionally show a message while restaurants load initially -->
+         <p class="text-center text-gray-500 py-4">Loading restaurant data...</p>
+       {/if}
     {/if}
 
 
