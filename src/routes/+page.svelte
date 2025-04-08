@@ -260,13 +260,13 @@
               animate:flip={{ duration: 300 }}
               class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-shadow duration-200 hover:shadow-md"
             >
-              {@const isExpanded = expandedItemId === food.id}
+              <!-- {@const isExpanded = expandedItemId === food.id} <-- Removed -->
 
               <!-- Clickable Header -->
               <button
                 on:click={() => toggleExpand(food.id)}
                 class="w-full flex justify-between items-center p-4 text-left focus:outline-none focus:bg-gray-50 transition duration-150"
-                aria-expanded={isExpanded}
+                aria-expanded={expandedItemId === food.id}
                 aria-controls={`details-${food.id}`}
               >
                 <div class="flex-grow mr-4">
@@ -280,13 +280,13 @@
                     <span class="font-medium">Calories:</span> {food.calories} kcal
                   </p>
                 </div>
-                <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200 flex-shrink-0" class:rotate-180={isExpanded} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200 flex-shrink-0" class:rotate-180={expandedItemId === food.id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               <!-- Expandable Details -->
-              {#if isExpanded}
+              {#if expandedItemId === food.id}
                 {@const totalMacros = food.protein + food.carbs + food.fat}
                 {@const proteinPercent = totalMacros > 0 ? (food.protein / totalMacros) * 100 : 0}
                 {@const carbsPercent = totalMacros > 0 ? (food.carbs / totalMacros) * 100 : 0}
