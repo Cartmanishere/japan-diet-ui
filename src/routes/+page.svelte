@@ -22,6 +22,7 @@
     // In a real app, handle potential errors here
     return mockRestaurants;
   }
+
   // Replace this with your actual API call
   const mockFoodDatabase = [
     { id: 1, name: 'Apple', servingSize: '1 medium', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
@@ -188,7 +189,7 @@
   <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6">
 
     <h1 class="text-3xl font-bold text-center text-green-700 mb-6">
-      Food Nutrition Lookup
+      Japan Diet
     </h1>
 
     <div class="relative mb-6">
