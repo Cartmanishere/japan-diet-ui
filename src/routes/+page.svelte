@@ -3,6 +3,7 @@
   import { flip } from 'svelte/animate';
   import { onMount } from 'svelte'; // Import onMount
   import FoodItem from '$lib/components/FoodItem.svelte';
+  import Pagination from '$lib/components/Pagination.svelte';
   import "../app.css";
 
   // --- Mock API ---
@@ -62,14 +63,14 @@
     // based on some imaginary restaurant-specific menu.
     let baseData = [...mockFoodDatabase]; // Assuming mockFoodDatabase exists elsewhere
     if (restaurantId && restaurantId !== 'r5') { // 'r5' is 'All Restaurants'
-        // Example: Simulate fewer items or different items for a specific restaurant
-        // baseData = mockFoodDatabase.filter(food => food.id % 2 === (restaurantId === 'r1' ? 0 : 1)); // Just an example
-        console.log(`Simulating filter for restaurant ${restaurantId}`);
+      // Example: Simulate fewer items or different items for a specific restaurant
+      // baseData = mockFoodDatabase.filter(food => food.id % 2 === (restaurantId === 'r1' ? 0 : 1)); // Just an example
+      console.log(`Simulating filter for restaurant ${restaurantId}`);
     }
 
     const filteredData = query
-      ? baseData.filter(food => food.name.toLowerCase().includes(lowerCaseQuery))
-      : baseData; // Return all (potentially restaurant-filtered) if query is empty
+          ? baseData.filter(food => food.name.toLowerCase().includes(lowerCaseQuery))
+          : baseData; // Return all (potentially restaurant-filtered) if query is empty
 
     const totalItems = filteredData.length;
     const totalPages = Math.ceil(totalItems / limit);
@@ -107,7 +108,7 @@
     const handler = setTimeout(() => {
       // Ensure restaurants have loaded before attempting search if a specific one is selected
       if (!restaurantsLoading) {
-          searchFoods(currentPage);
+        searchFoods(currentPage);
       }
     }, 300); // Wait 300ms after interaction stops
 
@@ -128,11 +129,11 @@
       totalPages = result.totalPages;
       // Ensure currentPage doesn't exceed totalPages after filtering
       if (currentPage > totalPages && totalPages > 0) {
-           currentPage = totalPages;
-           // Re-fetch if page number was adjusted (optional, depends on desired UX)
-           // await searchFoods(currentPage);
+        currentPage = totalPages;
+        // Re-fetch if page number was adjusted (optional, depends on desired UX)
+        // await searchFoods(currentPage);
       } else if (totalPages === 0) {
-          currentPage = 1; // Reset to page 1 if no results
+        currentPage = 1; // Reset to page 1 if no results
       }
 
     } catch (err) {
@@ -162,7 +163,7 @@
     expandedItemId = expandedItemId === itemId ? null : itemId;
   }
 
-  const goToPage = (page) => {
+  const goToPage = ({ detail: { page }}) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
       // The reactive block `$: searchFoods(currentPage)` will handle the search call
       // We just need to update currentPage
@@ -199,125 +200,89 @@
         bind:value={searchTerm}
         on:input={handleSearchInput}
         on:keydown={(event) => { if (event.key === 'Enter') searchFoods(1); }}
-        placeholder="Search for a food (e.g., Apple)"
-        class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+      placeholder="Search for a food (e.g., Apple)"
+      class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
       />
       <svg class="w-5 h-5 text-gray-400 absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-     </svg>
-   </div>
+      </svg>
+    </div>
 
-   <!-- Restaurant Selector -->
-   <div class="mb-6">
-     <label for="restaurant-select" class="block text-sm font-medium text-gray-700 mb-1">Select Restaurant:</label>
-     {#if restaurantsLoading}
-       <div class="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500">Loading restaurants...</div>
-     {:else if restaurantsError}
-       <div class="w-full px-4 py-3 border border-red-300 rounded-lg bg-red-100 text-red-700">{restaurantsError}</div>
-     {:else}
-       <div class="relative">
-         <select
-           id="restaurant-select"
-           bind:value={selectedRestaurant}
-           on:change={handleRestaurantChange}
-           class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 appearance-none bg-white"
-           disabled={restaurantsLoading || !!restaurantsError}
-         >
-           <!-- <option value="" disabled>Select a restaurant</option> -->
-           {#each restaurants as restaurant (restaurant.id)}
-             <option value={restaurant.id}>{restaurant.name}</option>
-           {/each}
-         </select>
-         <svg class="w-5 h-5 text-gray-400 absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+    <!-- Restaurant Selector -->
+    <div class="mb-6">
+      <label for="restaurant-select" class="block text-sm font-medium text-gray-700 mb-1">Select Restaurant:</label>
+      {#if restaurantsLoading}
+        <div class="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100 text-gray-500">Loading restaurants...</div>
+      {:else if restaurantsError}
+        <div class="w-full px-4 py-3 border border-red-300 rounded-lg bg-red-100 text-red-700">{restaurantsError}</div>
+      {:else}
+        <div class="relative">
+          <select
+            id="restaurant-select"
+            bind:value={selectedRestaurant}
+            on:change={handleRestaurantChange}
+            class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 appearance-none bg-white"
+            disabled={restaurantsLoading || !!restaurantsError}
+            >
+            <!-- <option value="" disabled>Select a restaurant</option> -->
+            {#each restaurants as restaurant (restaurant.id)}
+              <option value={restaurant.id}>{restaurant.name}</option>
+            {/each}
+          </select>
+          <svg class="w-5 h-5 text-gray-400 absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 8l4 4 4-4"/>
-         </svg>
-       </div>
-     {/if}
-   </div>
-   <!-- End Restaurant Selector -->
+          </svg>
+        </div>
+      {/if}
+    </div>
+    <!-- End Restaurant Selector -->
 
 
-   {#if isLoading}
-     <div class="text-center py-4 text-gray-500">
-       <svg class="animate-spin h-6 w-6 inline-block mr-2 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-       </svg>
-       Loading food data...
-     </div>
-   {/if}
-
-    {#if error}
-      <div class="text-center py-4 text-red-600 bg-red-100 border border-red-300 rounded-lg">
-        {error}
+    {#if isLoading}
+      <div class="text-center py-4 text-gray-500">
+        <svg class="animate-spin h-6 w-6 inline-block mr-2 text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        Loading food data...
       </div>
     {/if}
 
-    {#if !isLoading && !error}
-      {#if searchResults.length > 0}
-        <ul class="space-y-3 mb-6">
-          {#each searchResults as food, index}
-            <FoodItem
-              food={searchResults[index]}
-              isExpanded={expandedItemId === searchResults[index].id}
-              on:toggle={() => toggleExpand(searchResults[index].id)}
-            />
-          {/each}
-        </ul>
-      {:else if searchTerm && !isLoading}
-         <p class="text-center text-gray-500 py-4">No results found for "{searchTerm}"{selectedRestaurant !== 'r5' ? ` at ${restaurants.find(r=>r.id===selectedRestaurant)?.name || 'selected restaurant'}` : ''}.</p>
-       {:else if !searchTerm && !isLoading && !restaurantsLoading}
-         <p class="text-center text-gray-500 py-4">Start typing to search for foods{selectedRestaurant !== 'r5' ? ` at ${restaurants.find(r=>r.id===selectedRestaurant)?.name || 'selected restaurant'}` : ''}.</p>
-       {:else if restaurantsLoading}
-         <!-- Optionally show a message while restaurants load initially -->
-         <p class="text-center text-gray-500 py-4">Loading restaurant data...</p>
-       {/if}
-    {/if}
+{#if error}
+  <div class="text-center py-4 text-red-600 bg-red-100 border border-red-300 rounded-lg">
+    {error}
+  </div>
+{/if}
 
-
-    {#if !isLoading && totalPages > 1}
-      <nav class="flex justify-center items-center space-x-2 mt-6" aria-label="Pagination">
-        <button
-          on:click={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1}
-          class="px-3 py-1 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          class:bg-green-600={currentPage !== 1}
-          class:text-white={currentPage !== 1}
-          class:bg-gray-200={currentPage === 1}
-          class:text-gray-500={currentPage === 1}
-        >
-          Previous
-        </button>
-
-        {#each Array(totalPages) as _, i}
-          {@const pageNum = i + 1}
-          <button
-            on:click={() => goToPage(pageNum)}
-            class="px-3 py-1 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500 transition"
-            class:bg-green-600={pageNum === currentPage}
-            class:text-white={pageNum === currentPage}
-            class:bg-gray-100={pageNum !== currentPage}
-            class:text-gray-700={pageNum !== currentPage}
-            class:hover:bg-gray-200={pageNum !== currentPage}
-            aria-current={pageNum === currentPage ? 'page' : undefined}
-          >
-            {pageNum}
-          </button>
+{#if !isLoading && !error}
+  {#if searchResults.length > 0}
+    <ul class="space-y-3 mb-6">
+      {#each searchResults as food, index}
+        <FoodItem
+          food={searchResults[index]}
+          isExpanded={expandedItemId === searchResults[index].id}
+          on:toggle={() => toggleExpand(searchResults[index].id)}
+          />
         {/each}
+      </ul>
+    {:else if searchTerm && !isLoading}
+      <p class="text-center text-gray-500 py-4">No results found for "{searchTerm}"{selectedRestaurant !== 'r5' ? ` at ${restaurants.find(r=>r.id===selectedRestaurant)?.name || 'selected restaurant'}` : ''}.</p>
+    {:else if !searchTerm && !isLoading && !restaurantsLoading}
+      <p class="text-center text-gray-500 py-4">Start typing to search for foods{selectedRestaurant !== 'r5' ? ` at ${restaurants.find(r=>r.id===selectedRestaurant)?.name || 'selected restaurant'}` : ''}.</p>
+    {:else if restaurantsLoading}
+      <!-- Optionally show a message while restaurants load initially -->
+    <p class="text-center text-gray-500 py-4">Loading restaurant data...</p>
+  {/if}
+{/if}
 
-        <button
-          on:click={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          class="px-3 py-1 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          class:bg-green-600={currentPage !== totalPages}
-          class:text-white={currentPage !== totalPages}
-          class:bg-gray-200={currentPage === totalPages}
-          class:text-gray-500={currentPage === totalPages}
-        >
-          Next
-        </button>
-      </nav>
-    {/if}
+
+{#if !isLoading && totalPages > 1}
+  <Pagination
+    currentPage={currentPage}
+    totalPages={totalPages}
+    on:pageChange={goToPage}
+    />
+  {/if}
 
   </div>
 </div>
@@ -332,9 +297,9 @@
   /* @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap'); */
   /* body { font-family: 'Inter', sans-serif; } */
 
- /* Add custom styles if needed */
- :global(body) {
-     font-family: sans-serif; /* Example fallback */
- }
+  /* Add custom styles if needed */
+  :global(body) {
+    font-family: sans-serif; /* Example fallback */
+  }
 
 </style>
