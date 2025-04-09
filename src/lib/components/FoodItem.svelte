@@ -13,7 +13,7 @@
   $: carbsPercent = totalMacros > 0 ? (food.carbs / totalMacros) * 100 : 0;
   $: fatPercent = totalMacros > 0 ? (food.fat / totalMacros) * 100 : 0;
 
-  function handleToggle() {
+  const handleToggle = () => {
     // Dispatch an event instead of directly modifying parent state
     dispatch('toggle');
   }
