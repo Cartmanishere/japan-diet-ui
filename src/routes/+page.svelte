@@ -2,6 +2,7 @@
   import { fade, slide } from 'svelte/transition'; // Import slide
   import { flip } from 'svelte/animate';
   import { onMount } from 'svelte'; // Import onMount
+  import FoodItem from '$lib/components/FoodItem.svelte';
   import "../app.css";
 
   // --- Mock API ---
@@ -255,53 +256,12 @@
     {#if !isLoading && !error}
       {#if searchResults.length > 0}
         <ul class="space-y-3 mb-6">
-          {#each searchResults as food (food.id)}
-            <li
-              in:fade={{ duration: 200, delay: 100 }}
-              animate:flip={{ duration: 300 }}
-              class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-shadow duration-200 hover:shadow-md"
-            >
-              <!-- {@const isExpanded = expandedItemId === food.id} <-- Removed -->
-
-              <!-- Clickable Header -->
-              <button
-                on:click={() => toggleExpand(food.id)}
-                class="w-full flex justify-between items-center p-4 text-left focus:outline-none focus:bg-gray-50 transition duration-150"
-                aria-expanded={expandedItemId === food.id}
-                aria-controls={`details-${food.id}`}
-              >
-                <div class="flex-grow mr-4">
-                  <h3 class="text-lg font-semibold text-green-800">{food.name}</h3>
-                  {#if food.servingSize}
-                    <p class="text-sm text-gray-600 mt-1">
-                      <span class="font-medium">Serving:</span> {food.servingSize}
-                    </p>
-                  {/if}
-                  <p class="text-sm text-gray-600 mt-1">
-                    <span class="font-medium">Calories:</span> {food.calories} kcal
-                  </p>
-                </div>
-                <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200 flex-shrink-0" class:rotate-180={expandedItemId === food.id} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
-
-              <!-- Expandable Details -->
-              {#if expandedItemId === food.id}
-                {@const totalMacros = food.protein + food.carbs + food.fat}
-                {@const proteinPercent = totalMacros > 0 ? (food.protein / totalMacros) * 100 : 0}
-                {@const carbsPercent = totalMacros > 0 ? (food.carbs / totalMacros) * 100 : 0}
-                {@const fatPercent = totalMacros > 0 ? (food.fat / totalMacros) * 100 : 0}
-                <div transition:slide={{ duration: 200 }} id={`details-${food.id}`} class="p-4 border-t border-gray-200 bg-gray-50">
-                   <h4 class="text-md font-semibold text-gray-700 mb-2">Macro Breakdown (grams):</h4>
-                   <div class="text-sm text-gray-600 space-y-1">
-                      <div><strong>Protein:</strong> {food.protein}g ({proteinPercent.toFixed(1)}%)</div>
-                      <div><strong>Carbs:</strong> {food.carbs}g ({carbsPercent.toFixed(1)}%)</div>
-                      <div><strong>Fat:</strong> {food.fat}g ({fatPercent.toFixed(1)}%)</div>
-                   </div>
-                </div>
-              {/if}
-            </li>
+          {#each searchResults as food, index}
+            <FoodItem
+              food={searchResults[index]}
+              isExpanded={expandedItemId === searchResults[index].id}
+              on:toggle={() => toggleExpand(searchResults[index].id)}
+            />
           {/each}
         </ul>
       {:else if searchTerm && !isLoading}

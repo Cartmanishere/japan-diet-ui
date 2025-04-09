@@ -27,6 +27,17 @@
     aria-controls={`details-${food.id}`}
     >
     <!-- ... (rest of the button content using 'food' prop) ... -->
+    <div class="flex-grow mr-4">
+      <h3 class="text-lg font-semibold text-green-800">{food.name}</h3>
+      {#if food.servingSize}
+        <p class="text-sm text-gray-600 mt-1">
+          <span class="font-medium">Serving:</span> {food.servingSize}
+        </p>
+      {/if}
+      <p class="text-sm text-gray-600 mt-1">
+        <span class="font-medium">Calories:</span> {food.calories} kcal
+      </p>
+    </div>
     <svg class="w-5 h-5 text-gray-500 transform transition-transform duration-200 flex-shrink-0" class:rotate-180={isExpanded}>
       <!-- ... svg path ... -->
     </svg>
