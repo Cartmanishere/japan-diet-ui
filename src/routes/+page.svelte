@@ -47,8 +47,8 @@
     { id: 20, name: 'Beef Steak', servingSize: '100g', calories: 250, protein: 26, carbs: 0, fat: 15 },
   ];
 
-  // Updated fetchFoodData to accept restaurantId (simulation)
-  async function fetchFoodData(query = '', page = 1, limit = 5, restaurantId = null) {
+  // Updated fetchFoodData to accept restaurantId (simulation) using const syntax
+  const fetchFoodData = async (query = '', page = 1, limit = 5, restaurantId = null) => {
     console.log(`Fetching page ${page} for query: "${query}", restaurant: ${restaurantId || 'any'}`);
     // Simulate network delay
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -59,7 +59,7 @@
     // Here, we'll just log it and use the same mock data for simplicity.
     // If restaurantId is provided (and not 'all'), you might filter mockFoodDatabase
     // based on some imaginary restaurant-specific menu.
-    let baseData = [...mockFoodDatabase];
+    let baseData = [...mockFoodDatabase]; // Assuming mockFoodDatabase exists elsewhere
     if (restaurantId && restaurantId !== 'r5') { // 'r5' is 'All Restaurants'
         // Example: Simulate fewer items or different items for a specific restaurant
         // baseData = mockFoodDatabase.filter(food => food.id % 2 === (restaurantId === 'r1' ? 0 : 1)); // Just an example
@@ -83,7 +83,9 @@
       totalPages: totalPages,
       totalItems: totalItems,
     };
-  }
+  };
+
+
   // --- End Mock API ---
 
   let searchTerm = '';
@@ -112,9 +114,7 @@
     () => clearTimeout(handler); // Corrected function name
   }
 
-
-  async function searchFoods(page = 1) {
-    // Don't search if restaurants are still loading and a specific one is needed (optional check)
+  const searchFoods = async (page = 1) => {
     if (isLoading || (restaurantsLoading && selectedRestaurant !== 'r5')) return;
     isLoading = true;
     error = null;
@@ -145,23 +145,23 @@
     }
   }
 
-  function handleSearchInput(event) {
+  const handleSearchInput = (event) => {
     searchTerm = event.target.value;
     currentPage = 1; // Reset to first page on new text search
     // The reactive block will handle the search call
   }
 
-  function handleRestaurantChange(event) {
+  const handleRestaurantChange = (event) => {
     selectedRestaurant = event.target.value;
     currentPage = 1; // Reset to first page when restaurant changes
     // The reactive block will handle the search call
   }
 
-  function toggleExpand(itemId) {
+  const toggleExpand = (itemId) => {
     expandedItemId = expandedItemId === itemId ? null : itemId;
   }
 
- function goToPage(page) {
+  const goToPage = (page) => {
     if (page >= 1 && page <= totalPages && page !== currentPage) {
       // The reactive block `$: searchFoods(currentPage)` will handle the search call
       // We just need to update currentPage
