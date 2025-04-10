@@ -8,6 +8,55 @@
   import Search from '$lib/components/Search.svelte';
   import "../app.css";
 
+  const API_BASE = "http://localhost:8080"
+
+  const fetchFoodData = async (query = '', page = 1, limit = 5, restaurantId = null) => {
+    console.log(`Fetching page ${page} for query: "${query}", restaurant: ${restaurantId || 'any'}`);
+
+    let url = `/v1/api/foods`
+    let requestData = {
+      pagination: {
+        page: page,
+        limit: limit
+      },
+      name: query
+    }
+    try {
+      const httpResponse = await fetch(API_BASE+url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
+
+      if (!httpResponse.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const jsonResp = await httpResponse.json();
+      const { total, page, limit, items } = jsonResp.data;
+      const totalPages = total / limit;
+      console.log(`Found ${total} items, returning page ${page}`);
+
+
+      return {
+        data: items.map(food => {
+          return {
+            ...food,
+            id: food._id.$oid
+          }
+        }),
+        currentPage: page,
+        totalPages: totalPages,
+        totalItems: total,
+      };
+    } catch (error) {
+      console.error("Error fetching food data:", error);
+      throw error; // Re-throw to be handled in the calling function
+    }
+  }
+
   // --- Mock API ---
   // Mock Restaurant Data
   const mockRestaurants = [
@@ -20,75 +69,29 @@
 
   async function fetchRestaurants() {
     console.log('Fetching restaurants...');
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 200));
-    console.log('Restaurants fetched.');
-    // In a real app, handle potential errors here
-    return mockRestaurants;
-  }
+    let url = '/v1/api/restaurants'
+    try {
+      const httpResponse = await fetch(API_BASE + url)
+      if (!httpResponse.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-  // Replace this with your actual API call
-  const mockFoodDatabase = [
-    { id: 1, name: 'Apple', servingSize: '1 medium', calories: 95, protein: 0.5, carbs: 25, fat: 0.3 },
-    { id: 2, name: 'Banana', servingSize: '1 medium', calories: 105, protein: 1.3, carbs: 27, fat: 0.4 },
-    { id: 3, name: 'Chicken Breast', servingSize: '100g', calories: 165, protein: 31, carbs: 0, fat: 3.6 },
-    { id: 4, name: 'Broccoli', servingSize: '1 cup chopped', calories: 55, protein: 3.7, carbs: 11.2, fat: 0.6 },
-    { id: 5, name: 'Salmon', servingSize: '100g fillet', calories: 208, protein: 20, carbs: 0, fat: 13 },
-    { id: 6, name: 'Rice', servingSize: '1 cup cooked', calories: 205, protein: 4.3, carbs: 45, fat: 0.4 },
-    { id: 7, name: 'Almonds', servingSize: '28g (approx. 23)', calories: 164, protein: 6, carbs: 6, fat: 14 },
-    { id: 8, name: 'Egg', servingSize: '1 large', calories: 78, protein: 6, carbs: 0.6, fat: 5 },
-    { id: 9, name: 'Spinach', servingSize: '1 cup raw', calories: 7, protein: 0.9, carbs: 1.1, fat: 0.1 },
-    { id: 10, name: 'Sweet Potato', servingSize: '1 medium', calories: 86, protein: 1.6, carbs: 20, fat: 0.1 },
-    { id: 11, name: 'Avocado', servingSize: '1/2 medium', calories: 160, protein: 2, carbs: 9, fat: 15 },
-    { id: 12, name: 'Orange', servingSize: '1 medium', calories: 62, protein: 1.2, carbs: 15, fat: 0.2 },
-    { id: 13, name: 'Greek Yogurt', servingSize: '100g', calories: 59, protein: 10, carbs: 3.6, fat: 0.4 },
-    { id: 14, name: 'Quinoa', servingSize: '1 cup cooked', calories: 222, protein: 8, carbs: 39, fat: 3.6 },
-    { id: 15, name: 'Tofu', servingSize: '100g', calories: 76, protein: 8, carbs: 2.7, fat: 4.8 },
-    { id: 16, name: 'Peanut Butter', servingSize: '2 tbsp', calories: 190, protein: 7, carbs: 8, fat: 16 },
-    { id: 17, name: 'Milk', servingSize: '1 cup (240ml)', calories: 103, protein: 8, carbs: 12, fat: 2.4 },
-    { id: 18, name: 'Oats', servingSize: '1/2 cup dry (40g)', calories: 150, protein: 5, carbs: 27, fat: 3 },
-    { id: 19, name: 'Lentils', servingSize: '1 cup cooked', calories: 230, protein: 18, carbs: 40, fat: 0.8 },
-    { id: 20, name: 'Beef Steak', servingSize: '100g', calories: 250, protein: 26, carbs: 0, fat: 15 },
-  ];
-
-  // Updated fetchFoodData to accept restaurantId (simulation) using const syntax
-  const fetchFoodData = async (query = '', page = 1, limit = 5, restaurantId = null) => {
-    console.log(`Fetching page ${page} for query: "${query}", restaurant: ${restaurantId || 'any'}`);
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const lowerCaseQuery = query.toLowerCase();
-    // --- Filtering Simulation ---
-    // In a real API, the backend would handle filtering by restaurantId
-    // Here, we'll just log it and use the same mock data for simplicity.
-    // If restaurantId is provided (and not 'all'), you might filter mockFoodDatabase
-    // based on some imaginary restaurant-specific menu.
-    let baseData = [...mockFoodDatabase]; // Assuming mockFoodDatabase exists elsewhere
-    if (restaurantId && restaurantId !== 'r5') { // 'r5' is 'All Restaurants'
-      // Example: Simulate fewer items or different items for a specific restaurant
-      // baseData = mockFoodDatabase.filter(food => food.id % 2 === (restaurantId === 'r1' ? 0 : 1)); // Just an example
-      console.log(`Simulating filter for restaurant ${restaurantId}`);
+      const jsonResp = await httpResponse.json();
+      console.log("rest ", jsonResp);
+      const { total, page, limit, items } = jsonResp.data;
+      return items.map(
+        restaurant => {
+          return {
+            ...restaurant,
+            id: restaurant._id.$oid
+          }
+        }
+      )
+    } catch (error) {
+      console.error("Error fetching food data:", error);
+      throw error; // Re-throw to be handled in the calling function
     }
-
-    const filteredData = query
-          ? baseData.filter(food => food.name.toLowerCase().includes(lowerCaseQuery))
-          : baseData; // Return all (potentially restaurant-filtered) if query is empty
-
-    const totalItems = filteredData.length;
-    const totalPages = Math.ceil(totalItems / limit);
-    const startIndex = (page - 1) * limit;
-    const endIndex = startIndex + limit;
-    const paginatedData = filteredData.slice(startIndex, endIndex);
-
-    console.log(`Found ${totalItems} items, returning page ${page}/${totalPages}`);
-    return {
-      data: paginatedData,
-      currentPage: page,
-      totalPages: totalPages,
-      totalItems: totalItems,
-    };
-  };
-
+  }
 
   // --- End Mock API ---
 
