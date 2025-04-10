@@ -5,6 +5,7 @@
   import FoodItem from '$lib/components/FoodItem.svelte';
   import Pagination from '$lib/components/Pagination.svelte';
   import RestaurantSelector from '$lib/components/RestaurantSelector.svelte';
+  import Search from '$lib/components/Search.svelte';
   import "../app.css";
 
   // --- Mock API ---
@@ -148,8 +149,8 @@
     }
   }
 
-  const handleSearchInput = (event) => {
-    searchTerm = event.target.value;
+  const handleSearchInput = ({ detail: { searchInput } }) => {
+    searchTerm = searchInput;
     currentPage = 1; // Reset to first page on new text search
     // The reactive block will handle the search call
   }
@@ -195,21 +196,14 @@
       Japan Diet
     </h1>
 
-    <div class="relative mb-6">
-      <input
-        type="search"
-        bind:value={searchTerm}
-        on:input={handleSearchInput}
-        on:keydown={(event) => { if (event.key === 'Enter') searchFoods(1); }}
-      placeholder="Search for a food (e.g., Apple)"
-      class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
-      />
-      <svg class="w-5 h-5 text-gray-400 absolute top-1/2 right-3 transform -translate-y-1/2 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-      </svg>
-    </div>
 
-    <!-- Restaurant Selector -->
+    <Search
+      searchTerm={searchTerm}
+      on:searchInput={handleSearchInput}
+      on:enter={ () => { searchFoods(1) }}
+    />
+
+
     <RestaurantSelector
       restaurantsLoading={restaurantsLoading}
       restaurantsError={restaurantsError}
@@ -217,8 +211,6 @@
       restaurants={restaurants}
       on:restaurantChange={handleRestaurantChange}
     />
-    <!-- End Restaurant Selector -->
-
 
     {#if isLoading}
       <div class="text-center py-4 text-gray-500">
