@@ -19,7 +19,10 @@
         page: page,
         limit: limit
       },
-      name: query
+      name: query,
+    }
+    if (restaurantId != null && restaurantId != "-1") {
+      requestData['restaurant_id'] = restaurantId;
     }
     try {
       const httpResponse = await fetch(API_BASE+url, {
@@ -31,12 +34,13 @@
       });
 
       if (!httpResponse.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        console.log(await httpResponse.json())
+        throw new Error(`HTTP error! status: ${httpResponse.status}`);
       }
 
       const jsonResp = await httpResponse.json();
       const { total, page, limit, items } = jsonResp.data;
-      const totalPages = total / limit;
+      const totalPages = Math.ceil(total / limit);
       console.log(`Found ${total} items, returning page ${page}`);
 
 
@@ -57,18 +61,7 @@
     }
   }
 
-  // --- Mock API ---
-  // Mock Restaurant Data
-  const mockRestaurants = [
-    { id: 'r1', name: 'The Green Leaf Cafe' },
-    { id: 'r2', name: 'Ocean Blue Grill' },
-    { id: 'r3', name: 'Mountain Top Diner' },
-    { id: 'r4', name: 'City Bistro Express' },
-    { id: 'r5', name: 'All Restaurants' }, // Option for no specific restaurant
-  ];
-
   async function fetchRestaurants() {
-    console.log('Fetching restaurants...');
     let url = '/v1/api/restaurants'
     try {
       const httpResponse = await fetch(API_BASE + url)
@@ -93,10 +86,8 @@
     }
   }
 
-  // --- End Mock API ---
-
   let searchTerm = '';
-  let selectedRestaurant = 'r5'; // Default to 'All Restaurants'
+  let selectedRestaurant = '-1'; // Default to 'All Restaurants'
   let restaurants = [];
   let restaurantsLoading = true;
   let restaurantsError = null;
@@ -180,6 +171,8 @@
   onMount(async () => {
     try {
       restaurants = await fetchRestaurants();
+      restaurants.push({ id: "-1", name: "All Restaurants"})
+      console.log(restaurants);
       // Optionally trigger an initial search now that restaurants are loaded
       // searchFoods(1); // Uncomment if you want initial data based on default restaurant
     } catch (err) {

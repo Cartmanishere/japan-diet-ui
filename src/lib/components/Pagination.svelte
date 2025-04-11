@@ -1,6 +1,8 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
+  const MAX_PAGES = 10;
+
   export let currentPage;
   export let totalPages;
 
@@ -12,6 +14,22 @@
   export let activeClass = "bg-green-600 text-white";
   export let inactiveClass = "bg-gray-200 text-gray-500";
   export let hoverClass = "hover:bg-gray-200";
+
+  let pageNumbers = [];
+
+
+  $: {
+    // Calculate the start and end page numbers for the visible range
+    let startPage = Math.max(1, currentPage - Math.floor(MAX_PAGES / 2));
+    let endPage = Math.min(totalPages, startPage + MAX_PAGES - 1);
+
+    // Adjust startPage if we're near the end
+    if (endPage - startPage + 1 < MAX_PAGES) {
+      startPage = Math.max(1, endPage - MAX_PAGES + 1);
+    }
+
+    pageNumbers = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  }
 
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -31,8 +49,7 @@
       Previous
     </button>
 
-    {#each Array(totalPages) as _, i}
-      {@const pageNum = i + 1}
+    {#each pageNumbers as pageNum, i}
     <button
       on:click={() => goToPage(pageNum)}
       class="{buttonClass} {pageNum === currentPage ? activeClass : ''} {pageNum !== currentPage ? hoverClass : ''}"
