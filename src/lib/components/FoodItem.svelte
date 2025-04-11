@@ -3,6 +3,7 @@
   import { createEventDispatcher } from 'svelte';
   import { onDestroy, afterUpdate } from 'svelte';
   import { Chart } from 'chart.js/auto'; // Import Chart.js
+  import ChartDataLabels from 'chartjs-plugin-datalabels'; // Import the datalabels plugin
 
   export let food; // The food object
   export let isExpanded = false; // Whether this item is currently expanded
@@ -24,6 +25,8 @@
       if (chartInstance) {
         chartInstance.destroy();
       }
+      // Register the plugin locally for this chart instance
+      Chart.register(ChartDataLabels);
       // Create new chart
       chartInstance = new Chart(canvasEl.getContext('2d'), {
         type: 'pie',
@@ -33,9 +36,9 @@
             label: 'Macros',
             data: [food.protein, food.carbs, food.fat],
             backgroundColor: [
-              'rgb(255, 205, 86)',
-              'rgb(54, 162, 235)',
-              'rgb(255, 99, 132)'
+              'rgb(255, 205, 86)', // Yellow
+              'rgb(54, 162, 235)', // Blue
+              'rgb(255, 99, 132)'  // Red
             ],
             hoverOffset: 4
           }]
@@ -64,15 +67,39 @@
                   return label;
                 }
               }
+            },
+            // Configure the datalabels plugin
+            datalabels: {
+              formatter: (value, ctx) => {
+                // Display the raw value (grams)
+                // Ensure value is not null/undefined before appending 'g'
+                return value != null ? value + 'g' : '';
+              },
+              color: '#fff', // Color of the labels
+              font: {
+                weight: 'bold'
+              },
+              // Optional: Add background/border for better visibility on slices
+              // backgroundColor: function(context) {
+              //   return context.dataset.backgroundColor;
+              // },
+              // borderRadius: 4,
+              // padding: 6
             }
           }
         }
+        // Note: We registered the plugin above, so no need to list it in a separate 'plugins' array here
+        // unless specifically overriding global registration for this instance.
       });
     } else {
       // If not expanded or canvas doesn't exist, destroy any existing chart
       if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
+        // Optional: Unregister if dynamically registering/unregistering is complex.
+        // Chart.js usually handles cleanup with destroy, but explicit unregister
+        // can prevent potential issues in complex scenarios.
+        // Chart.unregister(ChartDataLabels);
       }
     }
   });
@@ -82,6 +109,9 @@
     if (chartInstance) {
       chartInstance.destroy();
     }
+    // Optional: Explicit unregistration on component destroy if needed,
+    // especially if registration issues were encountered.
+    // Chart.unregister(ChartDataLabels);
   });
 </script>
 
