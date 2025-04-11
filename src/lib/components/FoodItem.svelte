@@ -1,22 +1,88 @@
 <script>
   import { slide } from 'svelte/transition';
   import { createEventDispatcher } from 'svelte';
+  import { onDestroy, afterUpdate } from 'svelte';
+  import { Chart } from 'chart.js/auto'; // Import Chart.js
 
   export let food; // The food object
   export let isExpanded = false; // Whether this item is currently expanded
 
   const dispatch = createEventDispatcher();
 
-  // Calculate derived values inside the component if they only depend on the food prop
-  $: totalMacros = food.protein + food.carbs + food.fat;
-  $: proteinPercent = totalMacros > 0 ? (food.protein / totalMacros) * 100 : 0;
-  $: carbsPercent = totalMacros > 0 ? (food.carbs / totalMacros) * 100 : 0;
-  $: fatPercent = totalMacros > 0 ? (food.fat / totalMacros) * 100 : 0;
+  let canvasEl; // To bind to the canvas element
+  let chartInstance = null; // To hold the Chart.js instance
 
   const handleToggle = () => {
     // Dispatch an event instead of directly modifying parent state
     dispatch('toggle');
   }
+
+  afterUpdate(() => {
+    // Ensure canvas element exists and isExpanded is true before creating
+    if (isExpanded && canvasEl) {
+      // Destroy previous chart if it exists (e.g., if food prop changed while expanded)
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+      // Create new chart
+      chartInstance = new Chart(canvasEl.getContext('2d'), {
+        type: 'pie',
+        data: {
+          labels: ['Protein (g)', 'Carbs (g)', 'Fat (g)'],
+          datasets: [{
+            label: 'Macros',
+            data: [food.protein, food.carbs, food.fat],
+            backgroundColor: [
+              'rgb(255, 205, 86)',
+              'rgb(54, 162, 235)',
+              'rgb(255, 99, 132)'
+            ],
+            hoverOffset: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false, // Adjust as needed for layout
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  let label = context.label || '';
+                  if (label) {
+                    label += ': ';
+                  }
+                  if (context.parsed !== null) {
+                    // Calculate percentage for tooltip
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const value = context.parsed;
+                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                    label += `${value}g (${percentage}%)`;
+                  }
+                  return label;
+                }
+              }
+            }
+          }
+        }
+      });
+    } else {
+      // If not expanded or canvas doesn't exist, destroy any existing chart
+      if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+      }
+    }
+  });
+
+  onDestroy(() => {
+    // Ensure chart is destroyed when component is removed
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+  });
 </script>
 
 <li class="bg-white rounded-lg border border-gray-200 overflow-hidden transition-shadow duration-200 hover:shadow-md">
@@ -45,11 +111,8 @@
 
   {#if isExpanded}
     <div transition:slide={{ duration: 200 }} id={`details-${food.id}`} class="p-4 border-t border-gray-200 bg-gray-50">
-      <h4 class="text-md font-semibold text-gray-700 mb-2">Macro Breakdown (grams):</h4>
-      <div class="text-sm text-gray-600 space-y-1">
-        <div><strong>Protein:</strong> {food.protein}g ({proteinPercent.toFixed(1)}%)</div>
-        <div><strong>Carbs:</strong> {food.carbs}g ({carbsPercent.toFixed(1)}%)</div>
-        <div><strong>Fat:</strong> {food.fat}g ({fatPercent.toFixed(1)}%)</div>
+      <div class="relative h-64 w-full"> <!-- Adjust height/width as needed -->
+        <canvas bind:this={canvasEl}></canvas>
       </div>
     </div>
   {/if}
