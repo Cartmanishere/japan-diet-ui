@@ -8,7 +8,7 @@
   import Search from '$lib/components/Search.svelte';
   import "../app.css";
 
-  const API_BASE = "http://localhost:8080"
+  const API_BASE = "https://japan-diet-api-740618014337.asia-northeast1.run.app"
 
   const fetchFoodData = async (query = '', page = 1, limit = 5, restaurantId = null) => {
     console.log(`Fetching page ${page} for query: "${query}", restaurant: ${restaurantId || 'any'}`);
