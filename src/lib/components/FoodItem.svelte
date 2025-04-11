@@ -28,7 +28,7 @@
     >
     <!-- ... (rest of the button content using 'food' prop) ... -->
     <div class="flex-grow mr-4">
-      <h3 class="text-lg font-semibold text-green-800">{food.name_en}</h3>
+      <h3 class="text-lg font-semibold text-green-800">{food.name}</h3>
       {#if food.serving}
         <p class="text-sm text-gray-600 mt-1">
           <span class="font-medium">Serving:</span> {food.serving.size} {food.serving.unit}
