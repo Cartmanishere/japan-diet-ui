@@ -190,8 +190,16 @@
 <div class="min-h-screen bg-gradient-to-br from-green-50 to-cyan-100 p-4 sm:p-8 font-sans">
   <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6">
 
-    <h1 class="text-3xl font-bold text-center text-green-700 mb-6">
-      Japan Diet
+    <h1 class="text-4xl font-bold text-center mb-8 flex items-center justify-center gap-3">
+      <!-- Simple Leaf SVG Logo -->
+      <svg class="w-10 h-10 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" role="img" aria-labelledby="title-logo">
+        <title id="title-logo">Healthy food logo</title>
+        <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm0 14a6 6 0 01-6-6h2a4 4 0 104-4V4a6 6 0 016 6c0 3.31-2.69 6-6 6z" />
+        <path d="M11.5 6.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM10 10.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z" /> <!-- Simplified leaf/plant elements -->
+      </svg>
+      <span class="bg-gradient-to-r from-green-600 to-cyan-600 bg-clip-text text-transparent tracking-tight">
+        Shoku Data
+      </span>
     </h1>
 
 
