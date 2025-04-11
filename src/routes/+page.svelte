@@ -95,6 +95,7 @@
   let isLoading = false;
   let currentPage = 1;
   let totalPages = 1;
+  let totalItems = null; // Total items matching the search criteria
   let error = null; // For food search errors
   let expandedItemId = null; // ID of the currently expanded food item
 
@@ -131,6 +132,7 @@
       } else if (totalPages === 0) {
         currentPage = 1; // Reset to page 1 if no results
       }
+      totalItems = result.totalItems; // Update totalItems count
 
     } catch (err) {
       console.error("Error fetching food data:", err);
@@ -225,6 +227,12 @@
 {/if}
 
 {#if !isLoading && !error}
+  {#if totalItems !== null}
+    <p class="text-sm text-gray-600 text-center mb-3">
+      Total items found: <strong>{totalItems}</strong>
+    </p>
+  {/if}
+
   {#if searchResults.length > 0}
     <ul class="space-y-3 mb-6">
       {#each searchResults as food, index}
