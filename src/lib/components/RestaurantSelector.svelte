@@ -9,8 +9,8 @@
 
   const dispatch = createEventDispatcher();
 
-  const handleRestaurantChange = (event) => {
-    dispatch('restaurantChange', { selectedRestaurant: event.target.value })
+  const handleChange = (event) => {
+    dispatch('restaurantChange', { newRestaurant: event.target.value })
   }
 
 </script>
@@ -26,7 +26,7 @@
       <select
         id="restaurant-select"
         bind:value={selectedRestaurant}
-        on:change={handleRestaurantChange}
+        on:change={handleChange}
         class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 appearance-none bg-white"
         disabled={restaurantsLoading || !!restaurantsError}
         >

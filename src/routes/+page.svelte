@@ -110,6 +110,7 @@
         searchFoods(currentPage);
       }
     }, 300); // Wait 300ms after interaction stops
+    console.log("Reactive state has changed - restaurant = ", selectedRestaurant);
 
     // Cleanup function for the timeout
     () => clearTimeout(handler); // Corrected function name
@@ -152,8 +153,9 @@
     // The reactive block will handle the search call
   }
 
-  const handleRestaurantChange = ({ detail: { selectedRestaurant }}) => {
-    selectedRestaurant = selectedRestaurant;
+  const handleRestaurantChange = ({ detail: { newRestaurant }}) => {
+    console.log("Restaurant has changed - ", newRestaurant);
+    selectedRestaurant = newRestaurant;
     currentPage = 1; // Reset to first page when restaurant changes
     // The reactive block will handle the search call
   }
