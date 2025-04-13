@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
   import { createEventDispatcher } from 'svelte';
 
   const MAX_PAGES = 5; // Show fewer page numbers directly

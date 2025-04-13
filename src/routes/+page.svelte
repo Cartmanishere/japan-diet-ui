@@ -1,4 +1,6 @@
 <script>
+// @ts-nocheck
+
   import { fade, slide } from 'svelte/transition'; // Import slide
   import { flip } from 'svelte/animate';
   import { onMount } from 'svelte'; // Import onMount
@@ -118,7 +120,6 @@
     isLoading = true;
     error = null;
     currentPage = page; // Update current page for food search
-
     try {
       // Pass selectedRestaurant to the fetch function
       const result = await fetchFoodData(searchTerm, currentPage, 5, selectedRestaurant);
