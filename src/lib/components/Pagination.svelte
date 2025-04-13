@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
 
-  const MAX_PAGES = 10;
+  const MAX_PAGES = 5; // Show fewer page numbers directly
 
   export let currentPage;
   export let totalPages;
